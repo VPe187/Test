@@ -12,9 +12,11 @@ import static hu.nye.test.vpe.helpers.WebAdress.MAIN_PAGE;
 public class Steps {
     private static final Duration TIMEOUT_SECONDS = Duration.ofSeconds(3);
 
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     MainPage mainPage;
 
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     WebDriverFactory webDriverFactory;
 
