@@ -7,10 +7,18 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class MainPage {
-    @FindBy(xpath = "//*[@id=\"app\"]/header/div/div/ul[1]/li[1]/a")
-    private WebElement communitiesButton;
+    @FindBy(id = "onetrust-accept-btn-handler")
+    private WebElement acceptCookiesButton;
+    @FindBy(css = ".evnt-promo-card")
+    private List<WebElement> eventCards;
+    @FindBy(css = ".evnt-tab-content.active")
+    private WebElement activeTab;
+    @FindBy(css = ".evnt-tab-item")
+    private List<WebElement> allTabs;
 
     private final WebDriver webDriver;
 
@@ -19,7 +27,19 @@ public class MainPage {
         PageFactory.initElements(webDriver, this);
     }
 
-    public WebElement getCommunitiesButton() {
-        return communitiesButton;
+    public void acceptCookies() {
+        acceptCookiesButton.click();
+    }
+
+    public List<WebElement> getEventCards() {
+        return eventCards;
+    }
+
+    public WebElement getActiveTab() {
+        return activeTab;
+    }
+
+    public List<WebElement> getAllTabs() {
+        return allTabs;
     }
 }
