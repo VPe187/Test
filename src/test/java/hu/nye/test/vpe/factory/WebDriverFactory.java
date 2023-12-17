@@ -6,6 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeDriverService;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
@@ -63,7 +64,9 @@ public class WebDriverFactory {
             }
             case "edge" -> {
                 WebDriverManager.edgedriver().setup();
-                driver = new EdgeDriver(new EdgeOptions());
+                EdgeDriverService service = new EdgeDriverService.Builder().withLogOutput(System.out).build();
+                EdgeOptions options = new EdgeOptions();
+                driver = new EdgeDriver(service, options);
             }
             default ->
                     throw new RuntimeException(String.format("The %s as provided browser name is not valid.", browserName));
