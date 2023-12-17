@@ -8,8 +8,3 @@ Feature: Main page popular events
     Then I can see 4 event cards
     And the "Popular" tab is active
     And there are 5 tabs
-
-#  Scenario: User should be able to switch tabs
-#    And I click on the "My Events" tab
-#    Then I see the "You need to be logged in to see the events" text
-#    And I see the "Login" button

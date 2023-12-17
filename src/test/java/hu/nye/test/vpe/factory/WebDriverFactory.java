@@ -30,7 +30,7 @@ public class WebDriverFactory {
 
     private WebDriver driver;
 
-    private static final Duration IMPLICIT_WAIT_DURATION = Duration.ofSeconds(10);
+    private static final Duration IMPLICIT_WAIT_DURATION = Duration.ofSeconds(1);
 
     /**
      * Gets the WebDriver instance, initializing it if necessary.
