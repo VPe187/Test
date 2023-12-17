@@ -19,7 +19,6 @@ public class MainPage {
     private WebElement activeTab;
     @FindBy(css = ".evnt-tab-item")
     private List<WebElement> allTabs;
-
     private final WebDriver webDriver;
 
     public MainPage(WebDriverFactory webDriverFactory) {

@@ -3,7 +3,6 @@ Feature: Search on the community page
 	Background:
 		Given the 'Community' page is opened
 
-
 	Scenario Outline:
 		Given the 'Community' page is opened
 		When I type '<input>' into the search field

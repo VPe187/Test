@@ -5,6 +5,7 @@ import java.time.Duration;
 import hu.nye.test.vpe.factory.WebDriverFactory;
 import hu.nye.test.vpe.pages.CommunityPage;
 import hu.nye.test.vpe.pages.MainPage;
+import hu.nye.test.vpe.pages.VideoPage;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -18,10 +19,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static hu.nye.test.vpe.helpers.WebAdress.COMMUNITY_PAGE;
 import static hu.nye.test.vpe.helpers.WebAdress.MAIN_PAGE;
+import static hu.nye.test.vpe.helpers.WebAdress.VIDEO_PAGE;
 import static org.junit.Assert.assertEquals;
 
 public class Steps {
-    private static final Duration TIMEOUT_SECONDS = Duration.ofSeconds(3);
+    private static final int TIMEOUT_SECONDS = 5;
+
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+    @Autowired
+    WebDriverFactory webDriverFactory;
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
@@ -33,7 +39,7 @@ public class Steps {
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
-    WebDriverFactory webDriverFactory;
+    VideoPage videoPage;
 
     @Given("the {string} page is opened")
     public void thePageIsOpened(String pageName) {
@@ -45,6 +51,10 @@ public class Steps {
             case "Community" -> {
                 WebDriver driver = webDriverFactory.getDriver();
                 driver.get(COMMUNITY_PAGE);
+            }
+            case "Video" -> {
+                WebDriver driver = webDriverFactory.getDriver();
+                driver.get(VIDEO_PAGE);
             }
             default -> throw new RuntimeException(pageName + "is not a defined page.");
         }
@@ -82,7 +92,7 @@ public class Steps {
     public void iSeeNumberOfCardsCards(int expectedCardCount) {
         var driver = webDriverFactory.getDriver();
         FluentWait<WebDriver> wait = new FluentWait<>(driver)
-                .withTimeout(Duration.ofSeconds(5))
+                .withTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
                 .pollingEvery(Duration.ofSeconds(1))
                 .ignoring(NoSuchElementException.class);
         try {
@@ -92,6 +102,29 @@ public class Steps {
         } catch (TimeoutException e) {
             Assert.fail("Expected card count " + expectedCardCount + "did not match actual card count " +
                     communityPage.getEventCards().size());
+        }
+    }
+
+    @When("I type {string} into the video search field")
+    public void inputSearchVideos(String text) throws InterruptedException {
+        Thread.sleep(1000);
+        videoPage.searchFor(text);
+    }
+
+    @Then("I see {int} video cards")
+    public void iSeeNumberOfVideoCards(int expectedVideoCardCount) {
+        var driver = webDriverFactory.getDriver();
+        FluentWait<WebDriver> wait = new FluentWait<>(driver)
+                .withTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+                .pollingEvery(Duration.ofSeconds(1))
+                .ignoring(NoSuchElementException.class);
+        try {
+            wait.until(
+                    usedDriver -> videoPage.getVideoCards().size() == expectedVideoCardCount
+            );
+        } catch (TimeoutException e) {
+            Assert.fail("Expected video card count " + expectedVideoCardCount + "did not match actual video card count " +
+                    videoPage.getVideoCards().size());
         }
     }
 }
