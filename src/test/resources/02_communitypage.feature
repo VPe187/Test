@@ -14,3 +14,4 @@ Feature: Search on the community page
 			| China       | 1             |
 			| Minsk       | 7             |
 			| Nyiregyhaza | 0             |
+			| Croatia	  | 2			  |

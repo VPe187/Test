@@ -53,7 +53,6 @@ public class Steps {
     @When("I close the cookie disclaimer")
     public void iCloseTheCookieDisclaimer() {
         mainPage.acceptCookies();
-        communityPage.acceptCookies();
     }
 
     @Then("I can see {int} event cards")
