@@ -4,6 +4,7 @@ import java.time.Duration;
 
 import hu.nye.test.vpe.factory.WebDriverFactory;
 import hu.nye.test.vpe.pages.CommunityPage;
+import hu.nye.test.vpe.pages.EventPage;
 import hu.nye.test.vpe.pages.MainPage;
 import hu.nye.test.vpe.pages.VideoPage;
 import io.cucumber.java.en.Given;
@@ -18,6 +19,7 @@ import org.openqa.selenium.support.ui.FluentWait;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static hu.nye.test.vpe.helpers.WebAdress.COMMUNITY_PAGE;
+import static hu.nye.test.vpe.helpers.WebAdress.EVENT_PAGE;
 import static hu.nye.test.vpe.helpers.WebAdress.MAIN_PAGE;
 import static hu.nye.test.vpe.helpers.WebAdress.VIDEO_PAGE;
 import static org.junit.Assert.assertEquals;
@@ -41,6 +43,10 @@ public class Steps {
     @Autowired
     VideoPage videoPage;
 
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+    @Autowired
+    EventPage eventPage;
+
     @Given("the {string} page is opened")
     public void thePageIsOpened(String pageName) {
         switch (pageName) {
@@ -56,7 +62,11 @@ public class Steps {
                 WebDriver driver = webDriverFactory.getDriver();
                 driver.get(VIDEO_PAGE);
             }
-            default -> throw new RuntimeException(pageName + "is not a defined page.");
+            case "Event" -> {
+                WebDriver driver = webDriverFactory.getDriver();
+                driver.get(EVENT_PAGE);
+            }
+            default -> throw new RuntimeException(pageName + " is not a defined page.");
         }
     }
 
@@ -100,7 +110,7 @@ public class Steps {
                     usedDriver -> communityPage.getEventCards().size() == expectedCardCount
             );
         } catch (TimeoutException e) {
-            Assert.fail("Expected card count " + expectedCardCount + "did not match actual card count " +
+            Assert.fail("Expected card count " + expectedCardCount + " did not match actual card count " +
                     communityPage.getEventCards().size());
         }
     }
@@ -123,8 +133,26 @@ public class Steps {
                     usedDriver -> videoPage.getVideoCards().size() == expectedVideoCardCount
             );
         } catch (TimeoutException e) {
-            Assert.fail("Expected video card count " + expectedVideoCardCount + "did not match actual video card count " +
+            Assert.fail("Expected video card count " + expectedVideoCardCount + " did not match actual video card count " +
                     videoPage.getVideoCards().size());
         }
     }
+
+    @Then("I can see {int} upcoming event cards")
+    public void iSeeNumberOfUpcomingEvents(int expectedIncomingEvents) {
+        var driver = webDriverFactory.getDriver();
+        FluentWait<WebDriver> wait = new FluentWait<>(driver)
+                .withTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+                .pollingEvery(Duration.ofSeconds(1))
+                .ignoring(NoSuchElementException.class);
+        try {
+            wait.until(
+                    usedDriver -> eventPage.getUpcomingEvents() == expectedIncomingEvents
+            );
+        } catch (TimeoutException e) {
+            Assert.fail("Expected incoming event count " + expectedIncomingEvents + " did not match actual incoming event count " +
+                    eventPage.getUpcomingEvents());
+        }
+    }
+
 }

@@ -10,6 +10,6 @@ Feature: Search on the videos page
 		Examples:
 			| input       | numberOfCards |
 			| Linux		  | 4             |
-			| Android     | 14            |
+			| Android     | 12            |
 			| Windows     | 2            |
 
