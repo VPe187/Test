@@ -4,19 +4,22 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeDriverService;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxDriverService;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.firefox.GeckoDriverService;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.Duration;
 import java.util.Objects;
 
 public class WebDriverFactory {
-    @Value("${headless:false}")
+    @Value("${headless:true}")
     private Boolean headless;
 
     @Value("${browserName:edge}")
@@ -54,18 +57,30 @@ public class WebDriverFactory {
         switch (browserName) {
             case "chrome" -> {
                 WebDriverManager.chromedriver().setup();
-                driver = new ChromeDriver(
-                        new ChromeOptions().setHeadless(headless).addArguments("--remote-allow-origins=*")
-                );
+                ChromeDriverService service = new ChromeDriverService.Builder().withLogOutput(System.out).build();
+                ChromeOptions options = new ChromeOptions();
+                if (headless) {
+                    options.addArguments("--headless");
+                }
+                options.addArguments("--remote-allow-origins=*");
+                driver = new ChromeDriver(service, options);
             }
             case "firefox" -> {
                 WebDriverManager.firefoxdriver().setup();
-                driver = new FirefoxDriver(new FirefoxOptions().setHeadless(headless));
+                FirefoxDriverService service = new GeckoDriverService.Builder().withLogOutput(System.out).build();
+                FirefoxOptions options = new FirefoxOptions();
+                if (headless) {
+                    options.addArguments("-headless");
+                }
+                driver = new FirefoxDriver(service, options);
             }
             case "edge" -> {
                 WebDriverManager.edgedriver().setup();
                 EdgeDriverService service = new EdgeDriverService.Builder().withLogOutput(System.out).build();
                 EdgeOptions options = new EdgeOptions();
+                if (headless) {
+                    options.addArguments("--headless");
+                }
                 driver = new EdgeDriver(service, options);
             }
             default ->
