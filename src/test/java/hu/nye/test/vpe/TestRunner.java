@@ -11,5 +11,5 @@ import org.junit.runner.RunWith;
         stepNotifications = true,
         plugin = {"pretty", "html:target/test-report.html"}
 )
-public class RunTest {
+public class TestRunner {
 }

@@ -1,4 +1,4 @@
-package hu.nye.test.vpe.steps;
+package hu.nye.test.vpe.stepsdefs;
 
 import java.time.Duration;
 
@@ -25,7 +25,7 @@ import static hu.nye.test.vpe.helpers.WebAdress.MAIN_PAGE;
 import static hu.nye.test.vpe.helpers.WebAdress.VIDEO_PAGE;
 import static org.junit.Assert.assertEquals;
 
-public class Steps {
+public class StepDefinitions {
     private static final int TIMEOUT_SECONDS = 5;
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
