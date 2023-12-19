@@ -19,7 +19,7 @@ import java.time.Duration;
 import java.util.Objects;
 
 public class WebDriverFactory {
-    @Value("${headless:true}")
+    @Value("${headless:false}")
     private Boolean headless;
 
     @Value("${browserName:edge}")

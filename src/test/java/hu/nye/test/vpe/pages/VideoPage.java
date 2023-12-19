@@ -17,6 +17,9 @@ public class VideoPage {
     private WebElement searchField;
     @FindBy(css = ".evnt-talk-card")
     private List<WebElement> eventVideoCards;
+    @FindBy(id = "filter_tag")
+    private WebElement filterTag;
+
     private final WebDriver webDriver;
 
     public VideoPage(WebDriverFactory webDriverFactory) {
@@ -30,5 +33,13 @@ public class VideoPage {
 
     public List<WebElement> getVideoCards() {
         return eventVideoCards;
+    }
+
+    public void clickFilterTag() {
+        filterTag.click();
+    }
+
+    public boolean checkFilterPanelOpened() {
+        return filterTag.getAttribute("aria-expanded").equalsIgnoreCase("true");
     }
 }

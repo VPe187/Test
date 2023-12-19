@@ -12,11 +12,14 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.And;
 import org.junit.Assert;
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static hu.nye.test.vpe.helpers.WebAdress.COMMUNITY_PAGE;
@@ -24,6 +27,7 @@ import static hu.nye.test.vpe.helpers.WebAdress.EVENT_PAGE;
 import static hu.nye.test.vpe.helpers.WebAdress.MAIN_PAGE;
 import static hu.nye.test.vpe.helpers.WebAdress.VIDEO_PAGE;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class StepDefinitions {
     private static final int TIMEOUT_SECONDS = 5;
@@ -103,16 +107,14 @@ public class StepDefinitions {
     public void iSeeNumberOfCardsCards(int expectedCardCount) {
         var driver = webDriverFactory.getDriver();
         FluentWait<WebDriver> wait = new FluentWait<>(driver)
-                .withTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
-                .pollingEvery(Duration.ofSeconds(1))
-                .ignoring(NoSuchElementException.class);
+            .withTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+            .pollingEvery(Duration.ofSeconds(1))
+            .ignoring(NoSuchElementException.class);
         try {
-            wait.until(
-                    usedDriver -> communityPage.getEventCards().size() == expectedCardCount
-            );
+            wait.until(usedDriver -> communityPage.getEventCards().size() == expectedCardCount);
         } catch (TimeoutException e) {
             Assert.fail("Expected card count " + expectedCardCount + " did not match actual card count " +
-                    communityPage.getEventCards().size());
+                communityPage.getEventCards().size());
         }
     }
 
@@ -128,34 +130,67 @@ public class StepDefinitions {
         JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
         jsExecutor.executeScript("window.scrollTo(0, document.body.scrollHeight);");
         FluentWait<WebDriver> wait = new FluentWait<>(driver)
-                .withTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
-                .pollingEvery(Duration.ofSeconds(1))
-                .ignoring(NoSuchElementException.class);
+            .withTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+            .pollingEvery(Duration.ofSeconds(1))
+            .ignoring(NoSuchElementException.class);
         try {
-            wait.until(
-                    usedDriver -> videoPage.getVideoCards().size() == expectedVideoCardCount
-            );
+            wait.until(usedDriver -> videoPage.getVideoCards().size() == expectedVideoCardCount);
         } catch (TimeoutException e) {
             Assert.fail("Expected video card count " + expectedVideoCardCount + " did not match actual video card count " +
-                    videoPage.getVideoCards().size());
+                videoPage.getVideoCards().size());
         }
     }
 
     @Then("I can see {int} upcoming event cards")
-    public void iSeeNumberOfUpcomingEvents(int expectedIncomingEvents) {
+    public void iSeeNumberOfUpcomingEvents(int expectedIncomingEvents) throws InterruptedException {
         var driver = webDriverFactory.getDriver();
         FluentWait<WebDriver> wait = new FluentWait<>(driver)
-                .withTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
-                .pollingEvery(Duration.ofSeconds(1))
-                .ignoring(NoSuchElementException.class);
+            .withTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+            .pollingEvery(Duration.ofSeconds(1))
+            .ignoring(NoSuchElementException.class);
         try {
-            wait.until(
-                    usedDriver -> eventPage.getUpcomingEvents() == expectedIncomingEvents
-            );
+            wait.until(usedDriver -> eventPage.getUpcomingEvents() == expectedIncomingEvents);
         } catch (TimeoutException e) {
             Assert.fail("Expected incoming event count " + expectedIncomingEvents + " did not match actual incoming event count " +
-                    eventPage.getUpcomingEvents());
+                eventPage.getUpcomingEvents());
         }
     }
 
+    @Then("I can set filter to 'Hungary'")
+    public void setFilterToHungary() {
+        eventPage.setFilterToHungary();
+    }
+
+    @Then("I can see {int} events card in Hungary")
+    public void iSeeNumberOfEventsCardsHungary(int expectedEventCards) {
+        var driver = webDriverFactory.getDriver();
+        JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+        jsExecutor.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+        FluentWait<WebDriver> wait = new FluentWait<>(driver)
+            .withTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+            .pollingEvery(Duration.ofSeconds(1))
+            .ignoring(NoSuchElementException.class);
+        try {
+            wait.until(webDriver -> {
+                jsExecutor.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+                return eventPage.getEventCards() == expectedEventCards;
+            });
+        } catch (TimeoutException e) {
+            Assert.fail("Expected incoming event card count " + expectedEventCards + " did not match actual event card count " +
+                eventPage.getUpcomingEvents());
+        }
+    }
+
+    @When("I click filter_tag")
+    public void iClickFilterTag(){
+        var driver = webDriverFactory.getDriver();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("filter_tag")));
+        videoPage.clickFilterTag();
+    }
+
+    @Then("Filter panel is opened")
+    public void filterPanelIsOpened() {
+        assertTrue(videoPage.checkFilterPanelOpened());
+    }
 }

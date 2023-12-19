@@ -12,13 +12,13 @@ import java.util.List;
 
 @Component
 public class EventPage {
-    @FindBy(css = ".evnt-event-card")
+    @FindBy(className = "evnt-event-card")
     private List<WebElement> eventCards;
     @FindBy(className = "evnt-tab-counter")
     private WebElement upcomingEventsSpan;
-    @FindBy (id = "filter_location")
+    @FindBy(id = "filter_location")
     private WebElement filterLocationSelect;
-    @FindBy (className = "evnt-filter-item")
+    @FindBy(className = "evnt-filter-item")
     private List<WebElement> evntFilterItems;
     private final WebDriver webDriver;
 
@@ -34,7 +34,15 @@ public class EventPage {
     public void setFilterToHungary() {
         filterLocationSelect.click();
         for (WebElement evntFilterItem : evntFilterItems) {
-            evntFilterItem.findElement(By.id("filter_location_11"));
+            if(evntFilterItem.getText().equalsIgnoreCase("hungary")) {
+                WebElement checkBox = evntFilterItem.findElement(By.className("form-check-label"));
+                checkBox.click();
+            }
         }
     }
+
+    public int getEventCards() {
+        return eventCards.size();
+    }
 }
+
