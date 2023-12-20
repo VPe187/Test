@@ -14,5 +14,6 @@ Feature: Search on the videos page
 			| Windows     | 2             |
 
 	Scenario:
+		Given the 'Video' page is opened
 		When I click filter_tag
 		Then Filter panel is opened

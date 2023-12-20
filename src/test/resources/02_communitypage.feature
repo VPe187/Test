@@ -12,5 +12,5 @@ Feature: Search on the community page
 			| Budapest    | 4             |
 			| China       | 1             |
 			| Minsk       | 7             |
-			| Nyiregyhaza | 0             |
+			| Nyíregyháza | 0             |
 			| Croatia	  | 2			  |

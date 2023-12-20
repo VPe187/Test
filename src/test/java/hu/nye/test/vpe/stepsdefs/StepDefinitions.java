@@ -3,9 +3,11 @@ package hu.nye.test.vpe.stepsdefs;
 import java.time.Duration;
 
 import hu.nye.test.vpe.factory.WebDriverFactory;
+import hu.nye.test.vpe.pages.ArticlePage;
 import hu.nye.test.vpe.pages.CommunityPage;
 import hu.nye.test.vpe.pages.EventPage;
 import hu.nye.test.vpe.pages.MainPage;
+import hu.nye.test.vpe.pages.SpeakerPage;
 import hu.nye.test.vpe.pages.VideoPage;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -22,9 +24,11 @@ import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static hu.nye.test.vpe.helpers.WebAdress.ARTICLE_PAGE;
 import static hu.nye.test.vpe.helpers.WebAdress.COMMUNITY_PAGE;
 import static hu.nye.test.vpe.helpers.WebAdress.EVENT_PAGE;
 import static hu.nye.test.vpe.helpers.WebAdress.MAIN_PAGE;
+import static hu.nye.test.vpe.helpers.WebAdress.SPEAKER_PAGE;
 import static hu.nye.test.vpe.helpers.WebAdress.VIDEO_PAGE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -52,6 +56,14 @@ public class StepDefinitions {
     @Autowired
     EventPage eventPage;
 
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+    @Autowired
+    SpeakerPage speakerPage;
+
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+    @Autowired
+    ArticlePage articlePage;
+
     @Given("the {string} page is opened")
     public void thePageIsOpened(String pageName) {
         switch (pageName) {
@@ -70,6 +82,14 @@ public class StepDefinitions {
             case "Event" -> {
                 WebDriver driver = webDriverFactory.getDriver();
                 driver.get(EVENT_PAGE);
+            }
+            case "Speaker" -> {
+                WebDriver driver = webDriverFactory.getDriver();
+                driver.get(SPEAKER_PAGE);
+            }
+            case "Article" -> {
+                WebDriver driver = webDriverFactory.getDriver();
+                driver.get(ARTICLE_PAGE);
             }
             default -> throw new RuntimeException(pageName + " is not a defined page.");
         }
@@ -142,16 +162,16 @@ public class StepDefinitions {
     }
 
     @Then("I can see {int} upcoming event cards")
-    public void iSeeNumberOfUpcomingEvents(int expectedIncomingEvents) throws InterruptedException {
+    public void iSeeNumberOfUpcomingEvents(int expectedUpcomingEvents) {
         var driver = webDriverFactory.getDriver();
         FluentWait<WebDriver> wait = new FluentWait<>(driver)
             .withTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
             .pollingEvery(Duration.ofSeconds(1))
             .ignoring(NoSuchElementException.class);
         try {
-            wait.until(usedDriver -> eventPage.getUpcomingEvents() == expectedIncomingEvents);
+            wait.until(usedDriver -> eventPage.getUpcomingEvents() == expectedUpcomingEvents);
         } catch (TimeoutException e) {
-            Assert.fail("Expected incoming event count " + expectedIncomingEvents + " did not match actual incoming event count " +
+            Assert.fail("Expected upcoming event count " + expectedUpcomingEvents + " did not match actual upcoming event count " +
                 eventPage.getUpcomingEvents());
         }
     }
@@ -193,4 +213,57 @@ public class StepDefinitions {
     public void filterPanelIsOpened() {
         assertTrue(videoPage.checkFilterPanelOpened());
     }
+
+    @When("I type {string} into the speaker search field")
+    public void inputSearchSpeaker(String text) throws InterruptedException {
+        Thread.sleep(1000);
+        speakerPage.searchFor(text);
+    }
+
+    @Then("I see {int} speaker cards")
+    public void iSeeNumberOfSpeakerCards(int expectedSpeakerCardCount) {
+        var driver = webDriverFactory.getDriver();
+        JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+        jsExecutor.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+        FluentWait<WebDriver> wait = new FluentWait<>(driver)
+                .withTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+                .pollingEvery(Duration.ofSeconds(1))
+                .ignoring(NoSuchElementException.class);
+        try {
+            wait.until(webDriver -> {
+                jsExecutor.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+                return speakerPage.getUserCards() == expectedSpeakerCardCount;
+            });
+        } catch (TimeoutException e) {
+            Assert.fail("Expected speaker cards count " + expectedSpeakerCardCount + " did not match actual speaker cards count " +
+                    speakerPage.getUserCards());
+        }
+    }
+
+    @When("I type {string} into the article search field")
+    public void inputSearchArticle(String text) throws InterruptedException {
+        Thread.sleep(1000);
+        articlePage.searchFor(text);
+    }
+
+    @Then("I see {int} article cards")
+    public void iSeeNumberOfArticleCards(int expectedArticleCardCount) {
+        var driver = webDriverFactory.getDriver();
+        JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+        jsExecutor.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+        FluentWait<WebDriver> wait = new FluentWait<>(driver)
+                .withTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+                .pollingEvery(Duration.ofSeconds(1))
+                .ignoring(NoSuchElementException.class);
+        try {
+            wait.until(webDriver -> {
+                jsExecutor.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+                return articlePage.getArticleCards() == expectedArticleCardCount;
+            });
+        } catch (TimeoutException e) {
+            Assert.fail("Expected article card count " + expectedArticleCardCount + " did not match actual article card count " +
+                    articlePage.getArticleCards());
+        }
+    }
+
 }
